@@ -38,8 +38,11 @@ exports.iniciarSesion = async(req, res) => {
     try{
         const {email, contrasenia} = req.body;
         const usuario = await Usuario.findOne({email});
-        if(!usuario.email){
+        if(!usuario){
             return res.status(401).json({message: 'Credenciales incorrectas'});
+        }
+        if (!usuario.email) {
+            return res.status(401).json({ message: 'Credenciales incorrectas' });
         }
         const contraseniaValida = await bcrypt.compare(contrasenia, usuario.contrasenia);
         if(!contraseniaValida){

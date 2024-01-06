@@ -97,16 +97,29 @@ exports.agregarCalificacion = async (req, res) => {
   }
 };
 
-
-exports.obtenerCalificacionPorPelicula = async (req, res) => {
+exports.obtenerComentarioPorPelicula = async (req, res) => {
   try {
     const peliculaId = req.params.peliculaId;
 
+    // Obtener las calificaciones para la película específica
     const calificaciones = await Calificacion.find({ pelicula: peliculaId });
 
-    res.status(200).json({ calificaciones });
+    // Crear un array para almacenar la información de cada comentario
+    const comentarios = [];
+
+    // Iterar sobre cada calificación y obtener información del usuario
+    for (const calificacion of calificaciones) {
+      const usuario = await Usuario.findById(calificacion.usuario);
+      comentarios.push({
+        usuario: usuario ? usuario.nombre : 'Usuario no encontrado', // Puedes ajustar según la estructura de tu modelo de usuario
+        comentario: calificacion.texto
+      });
+    }
+
+    res.status(200).json({ comentarios });
   } catch (error) {
-    console.error('Error al obtener las calificaciones', error);
+    console.error('Error al obtener los comentarios', error);
     res.status(500).json({ message: 'Error en el servidor', error });
   }
 };
+
